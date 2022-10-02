@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Text;
-
-namespace NotificationUtils
+﻿namespace NotificationUtils
 {
     public abstract class WorkContext
     {

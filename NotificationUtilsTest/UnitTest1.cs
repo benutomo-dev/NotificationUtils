@@ -1,5 +1,4 @@
 using NotificationUtils;
-using System;
 using Xunit;
 
 namespace NotificationUtilsTest
