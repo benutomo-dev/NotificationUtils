@@ -16,7 +16,7 @@ namespace NotificationUtilsTest
         public void Test1()
         {
             int recvCount = 0;
-            MessageData<MessagesId> recvContext = null;
+            MessageData<MessagesId>? recvContext = null;
 
             var listener = new DelegateMessageListener<MessagesId>(recv =>
             {
@@ -35,9 +35,9 @@ namespace NotificationUtilsTest
             messanger.Token.Send(MessagesId.MessageA, context);
 
             Assert.Equal(1, recvCount);
-            Assert.Equal(MessagesId.MessageA, recvContext.Message);
-            Assert.Equal("MessageA{Value:aaa}", recvContext.ToString());
-            Assert.Equal("Recved Value2=aaa", recvContext.ToString("Recved Value2={Value2}"));
+            Assert.Equal(MessagesId.MessageA, recvContext?.Message);
+            Assert.Equal("MessageA{Value:aaa}", recvContext?.ToString());
+            Assert.Equal("Recved Value2=aaa", recvContext?.ToString("Recved Value2={Value2}"));
 
             var progress = new ProgressReporter();
             SomeMethod(progress.Token);

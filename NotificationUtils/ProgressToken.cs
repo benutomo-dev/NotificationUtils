@@ -19,7 +19,7 @@
             }
             else
             {
-                return new ProgressToken(node?.CreateBranchedTree(weight));
+                return new ProgressToken(node.CreateBranchedTree(weight));
             }
         }
 

@@ -4,9 +4,9 @@ namespace NotificationUtils
 {
     public class ProgressLeaf : IProgresSource
     {
-        public event Action WeightChanged;
+        public event Action? WeightChanged;
 
-        public event Action ProgressDegreeChanged;
+        public event Action? ProgressDegreeChanged;
 
         public double MinProgressDegree => Max == 0 ? 1 : (double)Current / Max;
 

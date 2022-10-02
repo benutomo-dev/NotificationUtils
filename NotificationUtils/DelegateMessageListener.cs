@@ -6,13 +6,13 @@ namespace NotificationUtils
     {
         Action<MessageData<MessageIdEnumType>> OnMessageDelegate { get; }
 
-        Func<MessageIdEnumType, bool> OnMessagePreviewDelegate { get; }
+        Func<MessageIdEnumType, bool>? OnMessagePreviewDelegate { get; }
 
         public DelegateMessageListener(Action<MessageData<MessageIdEnumType>> onMessageDelegate): this(null, onMessageDelegate)
         {
         }
 
-        public DelegateMessageListener(Func<MessageIdEnumType, bool> onMessagePreviewDelegate, Action<MessageData<MessageIdEnumType>> onMessageDelegate)
+        public DelegateMessageListener(Func<MessageIdEnumType, bool>? onMessagePreviewDelegate, Action<MessageData<MessageIdEnumType>> onMessageDelegate)
         {
             OnMessagePreviewDelegate = onMessagePreviewDelegate;
             OnMessageDelegate = onMessageDelegate;

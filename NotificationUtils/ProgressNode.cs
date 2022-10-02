@@ -7,15 +7,15 @@ namespace NotificationUtils
 {
     public class ProgressNode : IProgresSource
     {
-        public event Action WeightChanged;
+        public event Action? WeightChanged;
 
-        public event Action ProgressDegreeChanged;
+        public event Action? ProgressDegreeChanged;
 
         private object lockObject = new object();
 
         private bool needsUpdateProgressDegree;
 
-        private List<IProgresSource> progressSources;
+        private List<IProgresSource>? progressSources;
 
         public ProgressToken Token => new ProgressToken(this);
 
@@ -80,15 +80,15 @@ namespace NotificationUtils
                 }
                 else
                 {
-                    double totalWeight = progressSources?.Sum(v => v.Weight) ?? 0;
+                    double totalWeight = progressSources.Sum(v => v.Weight);
 
                     if (totalWeight == 0)
                     {
-                        Debug.Assert(progressSources?.All(v => v.Weight == 0) ?? true);
+                        Debug.Assert(progressSources.All(v => v.Weight == 0));
                         totalWeight = 1;
                     }
 
-                    (minProgressDegree, progressDegree) = progressSources?.Aggregate((minProgressDegree: 0.0, progressDegree: (double?)0.0), (accumlate, soruce) =>
+                    (minProgressDegree, progressDegree) = progressSources.Aggregate((minProgressDegree: 0.0, progressDegree: (double?)0.0), (accumlate, soruce) =>
                     {
                         var weightRate = soruce.Weight / totalWeight;
                         var accumMinProgress = accumlate.minProgressDegree + weightRate * soruce.MinProgressDegree;
@@ -103,7 +103,7 @@ namespace NotificationUtils
                         {
                             return (accumMinProgress, null);
                         }
-                    }) ?? (0.0, 0.0);
+                    });
 
                     Debug.Assert(minProgressDegree >= 0);
                     Debug.Assert(!progressDegree.HasValue || progressDegree.Value >= 0);

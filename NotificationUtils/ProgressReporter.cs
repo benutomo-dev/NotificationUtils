@@ -4,9 +4,9 @@ namespace NotificationUtils
 {
     public class ProgressReporter
     {
-        public event Action<Exception> UnhandledException;
+        public event Action<Exception>? UnhandledException;
 
-        public event Action ProgressDegreeChanged;
+        public event Action? ProgressDegreeChanged;
 
         public double MinProgressDegree => root.MinProgressDegree;
 

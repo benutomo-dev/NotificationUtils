@@ -10,8 +10,8 @@ namespace NotificationUtils
         public class ContextKeyTrait
         {
             public string ContextKey { get; }
-            public TypeConverter CustumConverter { get; }
-            public ICustomFormatter CustumFormatter { get; }
+            public TypeConverter? CustumConverter { get; }
+            public ICustomFormatter? CustumFormatter { get; }
 
             public bool Visible { get; }
 
@@ -29,7 +29,7 @@ namespace NotificationUtils
 
         public class MessageTrait
         {
-            public Dictionary<string, ContextKeyTrait> ContextKeyTraitDict { get; set; }
+            public Dictionary<string, ContextKeyTrait>? ContextKeyTraitDict { get; set; }
         }
 
         public static Dictionary<MessageIdEnumType, MessageTrait> MessageTraitDict { get; } = new Dictionary<MessageIdEnumType, MessageTrait>();

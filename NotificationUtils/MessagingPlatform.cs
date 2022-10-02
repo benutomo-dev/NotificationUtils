@@ -15,7 +15,7 @@ namespace NotificationUtils
             this.messageListeners = messageListeners;
         }
 
-        internal void Send<MessageIdEnumType>(MessageIdEnumType messageId, MessageData.Builder dataSource) where MessageIdEnumType : struct
+        internal void Send<MessageIdEnumType>(MessageIdEnumType messageId, MessageData.Builder? dataSource) where MessageIdEnumType : struct
         {
             if (messageListeners is null)
             {
@@ -26,12 +26,12 @@ namespace NotificationUtils
             {
                 if (MessageTraits<MessageIdEnumType>.MessageTraitDict.TryGetValue(messageId, out var traitsData))
                 {
-                    var missingContextKeys = traitsData.ContextKeyTraitDict.Keys.Where(v => !dataSource.ContainsKey(v)).ToList();
-                    Trace.Assert(missingContextKeys.Count == 0);
+                    var missingContextKeys = traitsData.ContextKeyTraitDict?.Keys.Where(v => dataSource is null || !dataSource.ContainsKey(v)).ToList();
+                    Trace.Assert(missingContextKeys?.Count == 0);
                 }
             }
 
-            MessageData<MessageIdEnumType> messageData = null;
+            MessageData<MessageIdEnumType>? messageData = null;
 
             foreach (var typelessListener in messageListeners)
             {

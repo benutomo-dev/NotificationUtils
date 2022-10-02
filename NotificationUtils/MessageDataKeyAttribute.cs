@@ -9,9 +9,9 @@ namespace NotificationUtils
 
         public string KeyName { get; }
 
-        public string CustumConverter { get; }
+        public string? CustumConverter { get; }
 
-        public string CustumFormatter { get; }
+        public string? CustumFormatter { get; }
 
         public bool Visible { get; set; }
 
@@ -20,10 +20,10 @@ namespace NotificationUtils
         public MessageDataDefinitionAttribute(string keyName) : this(keyName, default(string), default(string))
         {
         }
-        public MessageDataDefinitionAttribute(string keyName, Type custumStringConverter = null, Type custumFormatter = null) : this(keyName, custumStringConverter?.AssemblyQualifiedName, custumFormatter?.AssemblyQualifiedName)
+        public MessageDataDefinitionAttribute(string keyName, Type? custumStringConverter = null, Type? custumFormatter = null) : this(keyName, custumStringConverter?.AssemblyQualifiedName, custumFormatter?.AssemblyQualifiedName)
         {
         }
-        public MessageDataDefinitionAttribute(string contextKey, string custumStringConverter = null, string custumFormatter = null)
+        public MessageDataDefinitionAttribute(string contextKey, string? custumStringConverter = null, string? custumFormatter = null)
         {
             KeyName = contextKey;
             CustumConverter = custumStringConverter;

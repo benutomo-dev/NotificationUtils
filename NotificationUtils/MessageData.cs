@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -11,15 +12,15 @@ namespace NotificationUtils
 {
     public class MessageData<MessageIdEnumType> : MessageData, IFormattable where MessageIdEnumType : struct
     {
-        Dictionary<string, string> stringCache;
+        Dictionary<string, string>? stringCache;
 
-        string toStringCache;
+        string? toStringCache;
 
         MessageTraits<MessageIdEnumType>.MessageTrait messageTraitsData;
 
         public MessageIdEnumType Message { get; }
 
-        public MessageData(MessageIdEnumType message, ImmutableDictionary<string, object> context): base(context)
+        public MessageData(MessageIdEnumType message, ImmutableDictionary<string, object>? context): base(context)
         {
             if (!MessageTraits<MessageIdEnumType>.MessageTraitDict.TryGetValue(message, out messageTraitsData))
             {
@@ -27,8 +28,8 @@ namespace NotificationUtils
             }
 
 #if DEBUG
-            var missingContextKeys = messageTraitsData.ContextKeyTraitDict.Keys.Where(v => !this.ContainsKey(v)).ToList();
-            Trace.Assert(missingContextKeys.Count == 0, $"{typeof(MessageIdEnumType).Name}で定義されているキーが不足しているメッセージを作成しようとしています。{string.Join(",", missingContextKeys)}");
+            var missingContextKeys = messageTraitsData.ContextKeyTraitDict?.Keys.Where(v => !this.ContainsKey(v)).ToList();
+            Trace.Assert(missingContextKeys?.Count == 0, $"{typeof(MessageIdEnumType).Name}で定義されているキーが不足しているメッセージを作成しようとしています。{string.Join(",", missingContextKeys)}");
 #endif
 
             Message = message;
@@ -53,7 +54,7 @@ namespace NotificationUtils
 
                 if (keyValuePairs.TryGetValue(key, out var value))
                 {
-                    if (messageTraitsData.ContextKeyTraitDict.TryGetValue(key, out var trait) && trait.CustumConverter is TypeConverter compelTypeConverter)
+                    if (messageTraitsData.ContextKeyTraitDict is not null && messageTraitsData.ContextKeyTraitDict.TryGetValue(key, out var trait) && trait.CustumConverter is TypeConverter compelTypeConverter)
                     {
                         stringValue = compelTypeConverter.ConvertToString(value) ?? string.Empty;
                     }
@@ -88,9 +89,9 @@ namespace NotificationUtils
 
         public override string ToString() => ToString(default(string), default(IFormatProvider));
 
-        public string ToString(string format) => ToString(format, default(IFormatProvider));
+        public string ToString(string? format) => ToString(format, default(IFormatProvider));
 
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
             if (format is null)
             {
@@ -106,7 +107,7 @@ namespace NotificationUtils
                                     {
                                         int orderPriority;
                                         bool visible;
-                                        if (messageTraitsData.ContextKeyTraitDict.TryGetValue(v, out var traits))
+                                        if (messageTraitsData.ContextKeyTraitDict is not null && messageTraitsData.ContextKeyTraitDict.TryGetValue(v, out var traits))
                                         {
                                             orderPriority = traits.OrderPriority;
                                             visible = traits.Visible;
@@ -189,7 +190,7 @@ namespace NotificationUtils
                                 string valueFormat = format.Substring(fmtOrCloseIndex + 1, closeIndex - fmtOrCloseIndex - 1);
                                 if (TryGetValue(contextKey, out var value))
                                 {
-                                    if (messageTraitsData.ContextKeyTraitDict.TryGetValue(contextKey, out var trait) && trait.CustumFormatter is ICustomFormatter customFormatter)
+                                    if (messageTraitsData.ContextKeyTraitDict is not null && messageTraitsData.ContextKeyTraitDict.TryGetValue(contextKey, out var trait) && trait.CustumFormatter is ICustomFormatter customFormatter)
                                     {
                                         stringBuilder.Append(customFormatter.Format(valueFormat, value, formatProvider) ?? string.Empty);
                                     }
@@ -231,9 +232,9 @@ namespace NotificationUtils
 
     public abstract class MessageData
     {
-        internal protected ImmutableDictionary<string, object> keyValuePairs;
+        internal protected ImmutableDictionary<string, object>? keyValuePairs;
 
-        protected MessageData(ImmutableDictionary<string, object> context)
+        protected MessageData(ImmutableDictionary<string, object>? context)
         {
             this.keyValuePairs = context;
         }
@@ -246,7 +247,7 @@ namespace NotificationUtils
 
         public bool ContainsKey(string key) => keyValuePairs?.ContainsKey(key) ?? false;
 
-        public bool TryGetValue(string key, out object value)
+        public bool TryGetValue(string key,[NotNullWhen(true)] out object? value)
         {
             if (keyValuePairs is null)
             {
@@ -256,7 +257,7 @@ namespace NotificationUtils
 
             return keyValuePairs.TryGetValue(key, out value);
         }
-        public bool TryGetValueAs<T>(string key, out T value)
+        public bool TryGetValueAs<T>(string key, [NotNullWhen(true)] out T? value)
         {
             if (keyValuePairs is null || !keyValuePairs.TryGetValue(key, out var objectValue) || !(objectValue is T))
             {
@@ -305,12 +306,12 @@ namespace NotificationUtils
         }
 
 
-        internal protected static ImmutableDictionary<TKey, TVal>.Builder WithCreate<TKey, TVal>(ref ImmutableDictionary<TKey, TVal>.Builder member)
+        internal protected static ImmutableDictionary<TKey, TVal>.Builder WithCreate<TKey, TVal>(ref ImmutableDictionary<TKey, TVal>.Builder? member)
         {
             if (member is null) member = ImmutableDictionary.CreateBuilder<TKey, TVal>();
             return member;
         }
-        internal protected static Dictionary<TKey, TVal> WithCreate<TKey, TVal>(ref Dictionary<TKey, TVal> member)
+        internal protected static Dictionary<TKey, TVal> WithCreate<TKey, TVal>(ref Dictionary<TKey, TVal>? member)
         {
             if (member is null) member = new Dictionary<TKey, TVal>();
             return member;
@@ -318,7 +319,7 @@ namespace NotificationUtils
 
         public class Builder : IDictionary<string, object>
         {
-            ImmutableDictionary<string, object>.Builder keyValuePairs;
+            ImmutableDictionary<string, object>.Builder? keyValuePairs;
 
             public object this[string key]
             {
@@ -330,9 +331,9 @@ namespace NotificationUtils
                 set => WithCreate(ref keyValuePairs)[key] = value;
             }
 
-            public ICollection<string> Keys => ((IDictionary<string, object>)keyValuePairs)?.Keys ?? Array.Empty<string>();
+            public ICollection<string> Keys => ((IDictionary<string, object>?)keyValuePairs)?.Keys ?? Array.Empty<string>();
 
-            public ICollection<object> Values => ((IDictionary<string, object>)keyValuePairs)?.Values ?? Array.Empty<object>();
+            public ICollection<object> Values => ((IDictionary<string, object>?)keyValuePairs)?.Values ?? Array.Empty<object>();
 
             public int Count => keyValuePairs?.Count ?? 0;
 
@@ -374,7 +375,7 @@ namespace NotificationUtils
                 var localKeyValuePairs = keyValuePairs;
                 if (localKeyValuePairs is null)
                 {
-                    value = null;
+                    value = null!;
                     return false;
                 }
                 else
